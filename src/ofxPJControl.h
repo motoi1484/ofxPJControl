@@ -9,6 +9,32 @@
  *
  */
 
+/* usage
+ ofxPJControl pj;
+ pj.setup("192.168.7.60", 4352, PJLINK_MODE, ""); //ipはプロジェクタのIP
+
+ //電源ON
+ pj.On();
+ 
+ 
+ 
+ //入力切替　input Aに
+ pj.inputSelect(SONY_INPUT_A);
+ 
+ //入力切替 input Bに
+ pj.inputSelect(SONY_INPUT_B);
+ 
+ //入力切替 input Cに
+ pj.inputSelect(SONY_INPUT_C);
+ 
+ //入力切替 input Dに
+ pj.inputSelect(SONY_INPUT_D);
+ 
+ //電源OFF
+ pj.Off();
+ 
+*/
+
 #ifndef OFXPJCONTROL_H
 #define OFXPJCONTROL_H
 
@@ -35,6 +61,12 @@ const int CHRISTIE_MODE = 2;
 const int SANYO_MODE = 3;
 const int PJDESIGN_MODE = 4;
 
+enum{
+    SONY_INPUT_A=1,
+    SONY_INPUT_B,
+    SONY_INPUT_C,
+    SONY_INPUT_D,
+};
 
 class ofxPJControl
 {
@@ -53,7 +85,12 @@ public:
 	bool getProjectorStatus(); //return whether projector is on (true) or off (false)
 	void setProjectorPort(int port); //the network port of the projector
 	void sendCommand(string command); //send any string command to the projector without password authentication
-
+    
+    void shutter(bool b);
+    void christie_shutter(bool);
+    bool getShutterState(){return shutterState;}
+    void inputSelect(int input);
+    
 private:
 
 	void nec_On();
@@ -79,6 +116,7 @@ private:
 	bool connected;
 	int commMode;
 
+    bool shutterState;
 };
 
 #endif

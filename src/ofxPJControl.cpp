@@ -101,36 +101,39 @@ void ofxPJControl::sendPJLinkCommand(string command) {
             } else {
                 ofLogError() << "faled to connect."<<endl;
             }
-		}
-    
-    if(connected){
-        string authToken = "";
-
-        //eg. PJLINK 1 604cc14d
-        if(msgRx[7] == '1') {
-            ofLogNotice() << "with authentication" << endl;
-            MD5Engine md5;
-            md5.reset();
-            string hash = msgRx.substr(9,8);
-            ofLogNotice() << hash << endl;
-            md5.update(hash + password);
-            authToken = DigestEngine::digestToHex(md5.digest());
         }
-		ofLogNotice() << "sending command: " << authToken+command << endl;
-		pjClient.sendRaw(authToken+command);
-		msgRx = "";
-		while (msgRx.length() < 8) {
-			msgRx = pjClient.receiveRaw();
-		}
-        ofLogNotice() << "received response: " << msgRx << endl;
+    
+        cout << "OK" << endl;
+        if(connected){
+            string authToken = "";
 
-        pjClient.close();
-		//connected = false;
-    } else {
-        ofLogError()<< "still not connected."<<endl;
-        pjClient.close();
+            //eg. PJLINK 1 604cc14d
+            if(msgRx[7] == '1') {
+                ofLogNotice() << "with authentication" << endl;
+                MD5Engine md5;
+                md5.reset();
+                string hash = msgRx.substr(9,8);
+                ofLogNotice() << hash << endl;
+                //cout << "OK" << endl;
+                md5.update(hash + password);
+                authToken = DigestEngine::digestToHex(md5.digest());
+            }
+            ofLogNotice() << "sending command: " << authToken+command << endl;
+            pjClient.sendRaw(authToken+command);
+            msgRx = "";
+            while (msgRx.length() < 8) {
+                msgRx = pjClient.receiveRaw();
+            }
+            ofLogNotice() << "received response: " << msgRx << endl;
 
-    }
+        
+            pjClient.close();
+            //connected = false;
+        } else {
+            ofLogError()<< "still not connected."<<endl;
+            pjClient.close();
+
+        }
 }
 
 void ofxPJControl::sendCommand(string command){
@@ -142,11 +145,14 @@ void ofxPJControl::sendCommand(string command){
 		}
         ofLogNotice() << "sending command : " << command << endl;
         pjClient.sendRaw(command);
+        ofSleepMillis(100);
         ofLogNotice() << "Response length (Bytes) : " << pjClient.getNumReceivedBytes() << endl;
         msgRx = "";
-        msgRx = pjClient.receiveRaw();
-        ofLogNotice() << "received response : " << msgRx << endl;
-
+        if(pjClient.getNumReceivedBytes() > 0){
+            msgRx = pjClient.receiveRaw();
+            ofLogNotice() << "received response : " << msgRx << endl;
+        }
+    
         pjClient.close();
 }
 
@@ -180,8 +186,8 @@ void ofxPJControl::nec_On(){
 
 	projStatus = true;
 
-	delete rxBuffer;
-	delete buffer;
+	delete[] rxBuffer;
+	delete[] buffer;
 }
 
 void ofxPJControl::nec_Off() {
@@ -217,8 +223,8 @@ void ofxPJControl::nec_Off() {
 
 	projStatus = false;
 
-	delete rxBuffer;
-	delete buffer;
+	delete[] rxBuffer;
+	delete[] buffer;
 }
 
 void ofxPJControl::pjLink_On() {
@@ -270,5 +276,54 @@ void ofxPJControl::pjDesign_Off() {
     projStatus = false; //projector off
 }
 
+void ofxPJControl::shutter(bool b)
+{
+    if(b){
+        sendPJLinkCommand("%1AVMT 31\r");
+    }
+    else{
+        sendPJLinkCommand("%1AVMT 30\r");
+    }
+    shutterState = b;
+}
+
+void ofxPJControl::christie_shutter(bool b){
+    if(b){
+        string command = "(SHU 1)";
+        sendCommand(command);
+    }
+    else{
+        string command = "(SHU 0)";
+        sendCommand(command);
+    }
+    shutterState = b;
+}
+
+void ofxPJControl::inputSelect(int input)
+{
+    string command;
+    
+    switch(input){
+    case SONY_INPUT_A:
+        command = "%1INPT 11\r";
+        break;
+    case SONY_INPUT_B:
+        command = "%1INPT 31\r";
+        break;
+    case SONY_INPUT_C:
+        command = "%1INPT 32\r";
+        break;
+    case SONY_INPUT_D:
+        command = "%1INPT 33\r";
+        break;
+    default:
+        command = "";
+            break;
+    }
+    
+    if(command != ""){
+        sendPJLinkCommand(command);
+    }
+}
 
 
