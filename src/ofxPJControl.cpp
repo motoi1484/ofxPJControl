@@ -314,7 +314,7 @@ void ofxPJControl::inputSelect(int input)
         command = "%1INPT 32\r";
         break;
     case SONY_INPUT_D:
-        command = "%1INPT 33\r";
+        command = "%1INPT 51\r";
         break;
     default:
         command = "";
