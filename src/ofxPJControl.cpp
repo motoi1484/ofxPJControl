@@ -92,24 +92,24 @@ void ofxPJControl::sendPJLinkCommand(string command) {
             pjClient.setVerbose(true);
             connected = pjClient.setup(IPAddress, pjPort,true);
             if(connected){
-                ofLogNotice() << "connection established: " << IPAddress << ":" << pjPort << endl;
+                ofLogNotice() << "connection established: " << IPAddress << ":" << pjPort;
                 string response = "";
                 while (msgRx.length() < 8) {
                     msgRx = pjClient.receiveRaw();
                 }
-                ofLogNotice() << "received response: " << msgRx << endl;
+                ofLogNotice() << "received response: " << msgRx;
             } else {
-                ofLogError() << "faled to connect."<<endl;
+                ofLogError() << "faled to connect.";
             }
         }
     
-        cout << "OK" << endl;
+        //cout << "OK" << endl;
         if(connected){
             string authToken = "";
 
             //eg. PJLINK 1 604cc14d
             if(msgRx[7] == '1') {
-                ofLogNotice() << "with authentication" << endl;
+                ofLogNotice() << "with authentication";
                 MD5Engine md5;
                 md5.reset();
                 string hash = msgRx.substr(9,8);
@@ -118,19 +118,19 @@ void ofxPJControl::sendPJLinkCommand(string command) {
                 md5.update(hash + password);
                 authToken = DigestEngine::digestToHex(md5.digest());
             }
-            ofLogNotice() << "sending command: " << authToken+command << endl;
+            ofLogNotice() << "sending command: " << authToken+command;
             pjClient.sendRaw(authToken+command);
             msgRx = "";
             while (msgRx.length() < 8) {
                 msgRx = pjClient.receiveRaw();
             }
-            ofLogNotice() << "received response: " << msgRx << endl;
+            ofLogNotice() << "received response: " << msgRx;
 
         
             pjClient.close();
             //connected = false;
         } else {
-            ofLogError()<< "still not connected."<<endl;
+            ofLogError()<< "still not connected.";
             pjClient.close();
 
         }
@@ -139,18 +139,18 @@ void ofxPJControl::sendPJLinkCommand(string command) {
 void ofxPJControl::sendCommand(string command){
         if(!pjClient.isConnected()) {
 			pjClient.setVerbose(true);
-			ofLogNotice() << "connecting to : " << IPAddress << ":" << pjPort << endl;
+			ofLogNotice() << "connecting to : " << IPAddress << ":" << pjPort;
 			connected = pjClient.setup(IPAddress, pjPort, true);
 			ofLogNotice() << "connection state : " << connected;
 		}
-        ofLogNotice() << "sending command : " << command << endl;
+        ofLogNotice() << "sending command : " << command;
         pjClient.sendRaw(command);
         ofSleepMillis(100);
-        ofLogNotice() << "Response length (Bytes) : " << pjClient.getNumReceivedBytes() << endl;
+        ofLogNotice() << "Response length (Bytes) : " << pjClient.getNumReceivedBytes();
         msgRx = "";
         if(pjClient.getNumReceivedBytes() > 0){
             msgRx = pjClient.receiveRaw();
-            ofLogNotice() << "received response : " << msgRx << endl;
+            ofLogNotice() << "received response : " << msgRx;
         }
     
         pjClient.close();
@@ -170,9 +170,9 @@ void ofxPJControl::nec_On(){
 	pjClient.setVerbose(true);
 	if(!pjClient.isConnected()) {
 		connected = pjClient.setup(IPAddress, NEC_PORT);
-		ofLogNotice() << "connection established: " << IPAddress << ":" << NEC_PORT << endl;
+		ofLogNotice() << "connection established: " << IPAddress << ":" << NEC_PORT;
 	}
-	ofLogNotice() << "sending command: ON" << endl;
+	ofLogNotice() << "sending command: ON";
 
 	pjClient.sendRawBytes(buffer, 6);
 
@@ -206,10 +206,10 @@ void ofxPJControl::nec_Off() {
 
 	if(!pjClient.isConnected()) {
 		connected = pjClient.setup(IPAddress, NEC_PORT);
-		ofLogNotice() << "connection established: " << IPAddress << ":" << NEC_PORT << endl;
+		ofLogNotice() << "connection established: " << IPAddress << ":" << NEC_PORT;
 	}
 
-	ofLogNotice() << "sending command: OFF " << endl;
+	ofLogNotice() << "sending command: OFF ";
 
 	pjClient.sendRawBytes(buffer, 6);
 	printf("send: %x %x %x %x %x %x\n",buffer[0] , buffer[1] , buffer[2] , buffer[3] , buffer[4] , buffer[5] );
