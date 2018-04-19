@@ -299,6 +299,19 @@ void ofxPJControl::christie_shutter(bool b){
     shutterState = b;
 }
 
+void ofxPJControl::digitalcom_shutter(bool b)
+{
+    if(b){
+        string cmd = "*shutter = on\r";
+        sendCommand(cmd);
+    }
+    else{
+        string cmd = "*shutter = off\r";
+        sendCommand(cmd);
+    }
+    shutterState = b;
+}
+
 void ofxPJControl::inputSelect(int input)
 {
     string command;

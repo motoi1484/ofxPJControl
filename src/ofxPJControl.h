@@ -54,6 +54,7 @@ const int PJLINK_PORT = 4352; //PJLink projector protocol port
 const int CHRISTIE_PORT = 3002; //CHRISTIE projector protocol port
 const int SANYO_PORT = 100; //SANYO projector protocol port
 const int PJDESIGN_PORT = 1025; //Projectino Design projector protocol port
+const int DIGITALCOM_PORT = 7000; //Digital Communication projector port
 
 const int PJLINK_MODE = 0;
 const int NEC_MODE = 1;
@@ -87,7 +88,8 @@ public:
 	void sendCommand(string command); //send any string command to the projector without password authentication
     
     void shutter(bool b);
-    void christie_shutter(bool);
+    void christie_shutter(bool b);
+    void digitalcom_shutter(bool b);
     bool getShutterState(){return shutterState;}
     void inputSelect(int input);
     
