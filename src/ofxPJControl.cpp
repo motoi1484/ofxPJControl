@@ -102,7 +102,7 @@ void ofxPJControl::sendPJLinkCommand(string command, bool _waitResponse) {
 		string msgRx="";
 
         if(!pjClient.isConnected()) {
-            pjClient.setVerbose(true);
+            //pjClient.setVerbose(true);
             connected = pjClient.setup(IPAddress, pjPort,true);
             if(connected){
                 ofLogNotice() << "connection established: " << IPAddress << ":" << pjPort;
@@ -111,8 +111,10 @@ void ofxPJControl::sendPJLinkCommand(string command, bool _waitResponse) {
                 //if(_waitResponse){
                     while (msgRx.length() < 8) {
                         msgRx = pjClient.receiveRaw();
+                        //cout << msgRx.length() << endl;
                     }
-               // }
+                    
+                //}
                 
                 ofLogNotice() << "received response: " << msgRx;
                 //----------------------
@@ -151,9 +153,12 @@ void ofxPJControl::sendPJLinkCommand(string command, bool _waitResponse) {
             }
             
             ofLogNotice() << "received response: " << msgRx;
-            //----------------------
+            
+            pjClient.close();
+            
+            //-------------------------------------------------------
             //check the response
-            //----------------------
+            //-------------------------------------------------------
             vector<string> msgRx_splited = ofSplitString(msgRx, "=");
             if(msgRx_splited.size() > 1){
                 
@@ -184,7 +189,7 @@ void ofxPJControl::sendPJLinkCommand(string command, bool _waitResponse) {
                 //cout << msgRx_splited[0] << " " << ofToInt(msgRx_splited[1]) << endl;
                 
             }
-            pjClient.close();
+            
             //connected = false;
         } else {
             ofLogError()<< "still not connected.";
