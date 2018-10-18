@@ -84,13 +84,15 @@ public:
 	void setProjectorIP(string IP_add); //the network IP of the projector
     void setProjectorPassword(string passwd); //password for PJLink authentication
 	bool getProjectorStatus(); //return whether projector is on (true) or off (false)
+    void updateProjectorStatus();
 	void setProjectorPort(int port); //the network port of the projector
 	void sendCommand(string command); //send any string command to the projector without password authentication
     
     void shutter(bool b);
     void christie_shutter(bool b);
     void digitalcom_shutter(bool b);
-    bool getShutterState(){return shutterState;}
+    void updateShutterStatus();
+    bool getShutterStatus(){return shutterState;}
     void inputSelect(int input);
     
 private:

@@ -21,8 +21,21 @@ ofxPJControl::~ofxPJControl() {
 
 }
 
+void ofxPJControl::updateProjectorStatus()
+{
+    sendPJLinkCommand("%1POWR ?\r");
+}
+
 bool ofxPJControl::getProjectorStatus() {
+    
+    //sendPJLinkCommand("%1POWR ?\r");
+    
 	return projStatus;
+}
+
+void ofxPJControl::updateShutterStatus()
+{
+    sendPJLinkCommand("%1AVMT ?\r");
 }
 
 void ofxPJControl::setProjectorType(int protocol) { //NEC_MODE or PJLINK_MODE
@@ -133,7 +146,33 @@ void ofxPJControl::sendPJLinkCommand(string command) {
             //----------------------
             //check the response
             //----------------------
-        
+            vector<string> msgRx_splited = ofSplitString(msgRx, "=");
+            if(msgRx_splited.size() > 1){
+                if(msgRx_splited[0] == "%1POWR"){ //power command
+                    if(ofToInt(msgRx_splited[1]) == 1){
+                        projStatus = true;
+                    }
+                    else{
+                        projStatus = false;
+                    }
+                }
+                
+                if(msgRx_splited[1] == "%1AVMT"){
+                    if(ofToInt(msgRx_splited[1]) == 30){
+                        shutterState = true;
+                    }
+                    else if(ofToInt(msgRx_splited[1]) == 31){
+                        shutterState = false;
+                    }
+                    else{
+                        ofLogError() << "shutter state is something wrong";
+                        shutterState = false;
+                    }
+                    
+                }
+                //cout << msgRx_splited[0] << " " << msgRx_splited[1] << endl;
+                
+            }
             pjClient.close();
             //connected = false;
         } else {
