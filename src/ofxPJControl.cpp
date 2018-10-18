@@ -23,7 +23,7 @@ ofxPJControl::~ofxPJControl() {
 
 void ofxPJControl::updateProjectorStatus()
 {
-    sendPJLinkCommand("%1POWR ?\r");
+    sendPJLinkCommand("%1POWR ?\r", true);
 }
 
 bool ofxPJControl::getProjectorStatus() {
@@ -35,7 +35,7 @@ bool ofxPJControl::getProjectorStatus() {
 
 void ofxPJControl::updateShutterStatus()
 {
-    sendPJLinkCommand("%1AVMT ?\r");
+    sendPJLinkCommand("%1AVMT ?\r", true);
 }
 
 void ofxPJControl::setProjectorType(int protocol) { //NEC_MODE or PJLINK_MODE
@@ -98,7 +98,7 @@ void ofxPJControl::Off(){
     }
 }
 
-void ofxPJControl::sendPJLinkCommand(string command) {
+void ofxPJControl::sendPJLinkCommand(string command, bool _waitResponse) {
 		string msgRx="";
 
         if(!pjClient.isConnected()) {
@@ -107,9 +107,13 @@ void ofxPJControl::sendPJLinkCommand(string command) {
             if(connected){
                 ofLogNotice() << "connection established: " << IPAddress << ":" << pjPort;
                 string response = "";
-                while (msgRx.length() < 8) {
-                    msgRx = pjClient.receiveRaw();
-                }
+                
+                //if(_waitResponse){
+                    while (msgRx.length() < 8) {
+                        msgRx = pjClient.receiveRaw();
+                    }
+               // }
+                
                 ofLogNotice() << "received response: " << msgRx;
                 //----------------------
                 //check the response
@@ -139,16 +143,22 @@ void ofxPJControl::sendPJLinkCommand(string command) {
             ofLogNotice() << "sending command: " << authToken+command;
             pjClient.sendRaw(authToken+command);
             msgRx = "";
-            while (msgRx.length() < 8) {
-                msgRx = pjClient.receiveRaw();
+            
+            if(_waitResponse){
+                while (msgRx.length() < 8) {
+                    msgRx = pjClient.receiveRaw();
+                }
             }
+            
             ofLogNotice() << "received response: " << msgRx;
             //----------------------
             //check the response
             //----------------------
             vector<string> msgRx_splited = ofSplitString(msgRx, "=");
             if(msgRx_splited.size() > 1){
+                
                 if(msgRx_splited[0] == "%1POWR"){ //power command
+                    
                     if(ofToInt(msgRx_splited[1]) == 1){
                         projStatus = true;
                     }
@@ -157,20 +167,21 @@ void ofxPJControl::sendPJLinkCommand(string command) {
                     }
                 }
                 
-                if(msgRx_splited[1] == "%1AVMT"){
-                    if(ofToInt(msgRx_splited[1]) == 30){
+                if(msgRx_splited[0] == "%1AVMT"){
+                    
+                    if(ofToInt(msgRx_splited[1]) == 31){
                         shutterState = true;
                     }
-                    else if(ofToInt(msgRx_splited[1]) == 31){
+                    else if(ofToInt(msgRx_splited[1]) == 30){
                         shutterState = false;
                     }
                     else{
-                        ofLogError() << "shutter state is something wrong";
+                        ofLogError() << "shutter state is something wrong" << msgRx_splited[1];
                         shutterState = false;
                     }
                     
                 }
-                //cout << msgRx_splited[0] << " " << msgRx_splited[1] << endl;
+                //cout << msgRx_splited[0] << " " << ofToInt(msgRx_splited[1]) << endl;
                 
             }
             pjClient.close();
@@ -276,14 +287,14 @@ void ofxPJControl::nec_Off() {
 void ofxPJControl::pjLink_On() {
 	string command = "%1POWR 1\r";
     sendPJLinkCommand(command);
-    projStatus = true; //projector on
+    //projStatus = true; //projector on
 
 }
 
 void ofxPJControl::pjLink_Off() {
 	string command = "%1POWR 0\r";
 	sendPJLinkCommand(command);
-	projStatus = false; //projector off
+	//projStatus = false; //projector off
 }
 
 void ofxPJControl::sanyo_On() {
@@ -330,7 +341,7 @@ void ofxPJControl::shutter(bool b)
     else{
         sendPJLinkCommand("%1AVMT 30\r");
     }
-    shutterState = b;
+    //shutterState = b;
 }
 
 void ofxPJControl::christie_shutter(bool b){

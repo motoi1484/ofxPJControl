@@ -78,7 +78,7 @@ public:
 	//methods
 	void On(); //command to turn the projector off
 	void Off(); //command to turn the projector on
-	void sendPJLinkCommand(string command); //send any PJLink command to the projector
+	void sendPJLinkCommand(string command, bool _waitResponse=false); //send any PJLink command to the projector
 	void setup(string IP_add="192.168.0.100",int port = 4352, int protocol=PJLINK_MODE, string password=""); //default
 	void setProjectorType(int protocol); //NEC_MODE or PJLINK_MODE
 	void setProjectorIP(string IP_add); //the network IP of the projector
