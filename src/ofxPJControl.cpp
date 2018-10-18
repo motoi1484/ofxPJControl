@@ -98,6 +98,11 @@ void ofxPJControl::sendPJLinkCommand(string command) {
                     msgRx = pjClient.receiveRaw();
                 }
                 ofLogNotice() << "received response: " << msgRx;
+                //----------------------
+                //check the response
+                //----------------------
+                
+                
             } else {
                 ofLogError() << "faled to connect.";
             }
@@ -125,7 +130,9 @@ void ofxPJControl::sendPJLinkCommand(string command) {
                 msgRx = pjClient.receiveRaw();
             }
             ofLogNotice() << "received response: " << msgRx;
-
+            //----------------------
+            //check the response
+            //----------------------
         
             pjClient.close();
             //connected = false;
