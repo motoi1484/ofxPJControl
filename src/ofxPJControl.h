@@ -95,6 +95,8 @@ public:
     bool getShutterStatus(){return shutterState;}
     void inputSelect(int input);
     
+	string getHost() { return IPAddress; }
+
 private:
 
 	void nec_On();
