@@ -78,15 +78,15 @@ public:
 	//methods
 	void On(); //command to turn the projector off
 	void Off(); //command to turn the projector on
-	void sendPJLinkCommand(string command, bool _waitResponse=false); //send any PJLink command to the projector
-	void setup(string IP_add="192.168.0.100",int port = 4352, int protocol=PJLINK_MODE, string password=""); //default
+    void sendPJLinkCommand(std::string command, bool _waitResponse=false); //send any PJLink command to the projector
+    void setup(std::string IP_add="192.168.0.100",int port = 4352, int protocol=PJLINK_MODE, std::string password=""); //default
 	void setProjectorType(int protocol); //NEC_MODE or PJLINK_MODE
-	void setProjectorIP(string IP_add); //the network IP of the projector
-    void setProjectorPassword(string passwd); //password for PJLink authentication
+	void setProjectorIP(std::string IP_add); //the network IP of the projector
+    void setProjectorPassword(std::string passwd); //password for PJLink authentication
 	bool getProjectorStatus(); //return whether projector is on (true) or off (false)
     void updateProjectorStatus();
 	void setProjectorPort(int port); //the network port of the projector
-	void sendCommand(string command); //send any string command to the projector without password authentication
+	void sendCommand(std::string command); //send any string command to the projector without password authentication
     
     void shutter(bool b);
     void christie_shutter(bool b);
@@ -95,7 +95,7 @@ public:
     bool getShutterStatus(){return shutterState;}
     void inputSelect(int input);
     
-	string getHost() { return IPAddress; }
+	std::string getHost() { return IPAddress; }
 
 private:
 
@@ -112,13 +112,13 @@ private:
 
 	ofxTCPClient pjClient;
 
-	string IPAddress;
+	std::string IPAddress;
 	int pjPort;
-    string password;
+    std::string password;
 
 	bool projStatus;
-	string msgTx;
-	string msgRx;
+	std::string msgTx;
+	std::string msgRx;
 	bool connected;
 	int commMode;
 
